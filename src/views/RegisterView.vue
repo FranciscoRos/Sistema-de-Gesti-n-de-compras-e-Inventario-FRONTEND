@@ -38,6 +38,7 @@
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_BASE } from '../config'
 
 const nombre = ref('')
 const correo = ref('')
@@ -66,10 +67,11 @@ const registrarUsuario = async () => {
 
   try {
     const response = await fetch(
-      'https://superelchino.com/apis/Sistema-de-Gesti-n-de-compras-e-Inventario/usuarios/registro',
+      `${API_BASE}/usuarios/registro`,
       {
         method: 'POST',
         headers: {
+          
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({

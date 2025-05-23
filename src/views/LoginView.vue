@@ -29,6 +29,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_BASE } from '../config'
 
 const correo = ref('')
 const contrasena = ref('')
@@ -48,7 +49,7 @@ const iniciarSesion = async () => {
 
   try {
     const response = await fetch(
-      'https://superelchino.com/apis/Sistema-de-Gesti-n-de-compras-e-Inventario/usuarios/login',
+      `${API_BASE}/usuarios/login`,
       {
         method: 'POST',
         headers: {
@@ -60,8 +61,9 @@ const iniciarSesion = async () => {
         })
       }
     )
+    
 
-    const data = await response.json()
+     const data = await response.json()
 
     if (!response.ok || data.estado !== 1) {
       throw new Error(data.mensaje || 'Error al iniciar sesión')
