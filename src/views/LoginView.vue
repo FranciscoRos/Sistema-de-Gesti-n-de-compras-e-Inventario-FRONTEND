@@ -75,7 +75,6 @@ const iniciarSesion = async () => {
     localStorage.setItem('correo', usuario.correo)
     localStorage.setItem('idUsuario', usuario.id)
 
-    // Redirigir al dashboard
     router.push('/dashboard')
   } catch (err: any) {
     error.value = err.message

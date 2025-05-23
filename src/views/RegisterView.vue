@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts" setup>
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -62,12 +63,6 @@ const registrarUsuario = async () => {
     return
   }
 
-  // Aquí harás la llamada real a tu API más adelante
-  // console.log('Usuario listo para registrarse:', {
-  //   nombre: nombre.value,
-  //   correo: correo.value,
-  //   contrasena: contrasena.value
-  // })
 
   try {
     const response = await fetch(
@@ -91,15 +86,13 @@ const registrarUsuario = async () => {
       throw new Error(data.mensaje || 'Error al iniciar sesión')
     }
 
-    const usuario = data.usuario
+    
 
-    // Guardamos datos en localStorage
     localStorage.setItem('token', data.claveApi)
     //localStorage.setItem('nombre', nombre.value)
     //localStorage.setItem('correo', usuario.correo)
     //localStorage.setItem('idUsuario', usuario.id)
 
-    // Redirigir al dashboard
     router.push('/dashboard')
   } catch (err: any) {
     error.value = err.message || 'Error al registrar'
