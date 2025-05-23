@@ -19,7 +19,7 @@ const routes = [
   { path: '/', component: LoginView },
   { path: '/dashboard', component: DashboardView },
   { path: '/registro', component: RegisterView },
-  { path: '/productos', component: ProductosView },
+  { path: '/inventario', component: ProductosView },
   { path: '/proveedores', component: ProveedoresView },
   { path: '/compras', component: ComprasView },
   { path: '/compras/nueva', component: CrearCompraView },

@@ -30,9 +30,9 @@ const router = useRouter()
 
 const tarjetas = [
   {
-    titulo: 'Productos',
+    titulo: 'Inventario',
     descripcion: 'Gestiona el inventario de productos',
-    ruta: '/productos'
+    ruta: '/inventario'
   },
   {
     titulo: 'Compras',

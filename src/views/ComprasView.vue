@@ -1,39 +1,34 @@
 <template>
   <Header />
+<!-- 🔘 BOTÓN PARA IR A REGISTRAR UNA NUEVA COMPRA (alineado a la derecha con padding) -->
+<div class="d-flex justify-content-end pt-3 mb-3 pe-4">
+  <button class="btn btn-primary" @click="irANuevaCompra">
+    Registrar nueva compra
+  </button>
+</div>
+
 
   <div class="container mt-5 pt-4">
     <h2 class="mb-4">Historial de Compras</h2>
 
-    <div
-      v-for="compra in compras"
-      :key="compra.idCompra"
-      class="card mb-3 shadow"
-    >
-      <div
-        class="card-header d-flex justify-content-between align-items-center"
-        @click="toggleDetalle(compra.idCompra)"
-        style="cursor: pointer"
-      >
+    <!-- ▶️ LISTA DE COMPRAS CON ACORDEÓN -->
+    <div v-for="compra in compras" :key="compra.idCompra" class="card mb-3 shadow">
+      <!-- 🟢 CABECERA CLICKEABLE PARA MOSTRAR DETALLES -->
+      <div class="card-header d-flex justify-content-between align-items-center" @click="toggleDetalle(compra.idCompra)"
+        style="cursor: pointer">
         <div>
           <strong>ID:</strong> {{ compra.idCompra }} |
           <strong>Fecha:</strong> {{ formatearFecha(compra.fecha) }} |
-          <strong>Total:</strong> ${{ compra.total.toFixed(2) }}
+          <strong>Total:</strong> ${{ Number(compra.total).toFixed(2) }}
         </div>
-        <span>
-          <i
-            class="bi"
-            :class="{
-              'bi-chevron-down': !detallesVisibles[compra.idCompra],
-              'bi-chevron-up': detallesVisibles[compra.idCompra],
-            }"
-          ></i>
-        </span>
+        <i class="bi" :class="{
+          'bi-chevron-down': !detallesVisibles[compra.idCompra],
+          'bi-chevron-up': detallesVisibles[compra.idCompra],
+        }"></i>
       </div>
 
-      <div
-        v-if="detallesVisibles[compra.idCompra]"
-        class="card-body bg-light"
-      >
+      <!-- 🔽 DETALLE DE COMPRA (SE EXPANDE CUANDO SE CLICKEA) -->
+      <div v-if="detallesVisibles[compra.idCompra]" class="card-body bg-light">
         <p class="fw-bold">Detalle de productos:</p>
 
         <table class="table table-sm table-bordered table-hover">
@@ -46,15 +41,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="item in detalles[compra.idCompra]"
-              :key="item.idProducto"
-            >
-              <td>{{ item.nombre }}</td>
+            <tr v-for="item in detalles[compra.idCompra]" :key="item.idProducto">
+              <td>{{ item.producto }}</td>
               <td>{{ item.cantidad }}</td>
-              <td>${{ item.precioUnitario.toFixed(2) }}</td>
-              <td>${{ item.subtotal.toFixed(2) }}</td>
+              <td>${{ Number(item.precioUnitario).toFixed(2) }}</td>
+              <td>${{ Number(item.subtotal).toFixed(2) }}</td>
             </tr>
+
           </tbody>
         </table>
 
@@ -64,6 +57,7 @@
       </div>
     </div>
 
+    <!-- ⚠️ MENSAJE SI NO HAY COMPRAS -->
     <div v-if="compras.length === 0" class="alert alert-info">
       No hay compras registradas aún.
     </div>
@@ -71,10 +65,13 @@
 </template>
 
 <script lang="ts" setup>
+// 📦 IMPORTACIONES
+import Header from '../components/Header.vue'
 import { ref, onMounted } from 'vue'
 import { API_BASE } from '../config'
-import Header from '../components/Header.vue'
+import { useRouter } from 'vue-router'
 
+// 🧾 TIPOS DE DATOS
 interface Compra {
   idCompra: number
   fecha: string
@@ -83,20 +80,22 @@ interface Compra {
 
 interface Detalle {
   idProducto: number
-  nombre: string
+  producto: string
   cantidad: number
   precioUnitario: number
   subtotal: number
 }
 
+// 📁 VARIABLES REACTIVAS
 const compras = ref<Compra[]>([])
 const detalles = ref<Record<number, Detalle[]>>({})
 const detallesVisibles = ref<Record<number, boolean>>({})
 
+// 🔐 TOKEN DEL USUARIO
 const token = localStorage.getItem('token')
 
+// 🔄 CARGAR COMPRAS
 const cargarCompras = async () => {
-  console.log(token);
   try {
     const response = await fetch(`${API_BASE}/compras/`, {
       method: 'GET',
@@ -107,7 +106,7 @@ const cargarCompras = async () => {
     })
     const data = await response.json()
 
-    if (data.estado === 1) {
+    if (data.estado === 1 && Array.isArray(data.datos)) {
       compras.value = data.datos
     } else {
       console.error('Error al obtener compras:', data.mensaje)
@@ -117,9 +116,19 @@ const cargarCompras = async () => {
   }
 }
 
+// 🔽 TOGGLE DETALLE DE COMPRA
+const toggleDetalle = async (idCompra: number) => {
+  detallesVisibles.value[idCompra] = !detallesVisibles.value[idCompra]
+
+  if (detallesVisibles.value[idCompra] && !detalles.value[idCompra]) {
+    await cargarDetalle(idCompra)
+  }
+}
+
+// 📦 CARGAR DETALLE DE UNA COMPRA
 const cargarDetalle = async (idCompra: number) => {
   try {
-    const response = await fetch(`${API_BASE}/compras/${idCompra}/detalle`, {
+    const response = await fetch(`${API_BASE}/detalleCompras/${idCompra}`, {
       method: 'GET',
       headers: {
         Authorization: token ?? '',
@@ -129,7 +138,7 @@ const cargarDetalle = async (idCompra: number) => {
     const data = await response.json()
 
     if (data.estado === 1) {
-      detalles.value[idCompra] = data.detalles
+      detalles.value[idCompra] = data.datos
     } else {
       console.error('Error al obtener detalle de compra:', data.mensaje)
     }
@@ -138,15 +147,7 @@ const cargarDetalle = async (idCompra: number) => {
   }
 }
 
-const toggleDetalle = async (idCompra: number) => {
-  detallesVisibles.value[idCompra] = !detallesVisibles.value[idCompra]
-
-  // Si se va a mostrar y aún no se ha cargado, entonces cargarlo
-  if (detallesVisibles.value[idCompra] && !detalles.value[idCompra]) {
-    await cargarDetalle(idCompra)
-  }
-}
-
+// 📆 FORMATEAR FECHA
 const formatearFecha = (fecha: string): string => {
   const d = new Date(fecha)
   return d.toLocaleDateString('es-MX', {
@@ -161,6 +162,14 @@ const formatearFecha = (fecha: string): string => {
 onMounted(() => {
   cargarCompras()
 })
+
+const router = useRouter()
+
+const irANuevaCompra = () => {
+  router.push('/compras/nueva')
+}
+
+
 </script>
 
 <style scoped>
