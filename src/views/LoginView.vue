@@ -4,28 +4,20 @@
 
     <div class="form-group mb-3">
       <label for="correo">Correo electrónico</label>
-      <input
-        type="email"
-        class="form-control"
-        id="correo"
-        v-model="correo"
-        placeholder="ejemplo@correo.com"
-      />
+      <input type="email" class="form-control" id="correo" v-model="correo" placeholder="ejemplo@correo.com" />
     </div>
 
     <div class="form-group mb-4">
       <label for="contrasena">Contraseña</label>
-      <input
-        type="password"
-        class="form-control"
-        id="contrasena"
-        v-model="contrasena"
-        placeholder="********"
-      />
+      <input type="password" class="form-control" id="contrasena" v-model="contrasena" placeholder="********" />
     </div>
 
     <button class="btn btn-primary w-100" @click="iniciarSesion">
       Entrar
+    </button>
+
+    <button class="btn btn-outline-secondary w-100 mt-2" @click="irARegistro">
+      ¿No tienes cuenta? Regístrate aquí
     </button>
 
     <div v-if="error" class="alert alert-danger mt-3">
@@ -42,6 +34,9 @@ const correo = ref('')
 const contrasena = ref('')
 const error = ref('')
 const router = useRouter()
+const irARegistro = () => {
+  router.push('/registro')
+}
 
 const iniciarSesion = async () => {
   error.value = ''
