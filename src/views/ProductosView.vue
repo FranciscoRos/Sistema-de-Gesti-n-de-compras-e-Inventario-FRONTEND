@@ -186,9 +186,6 @@ const guardarProducto = async () => {
 }
 
 
-const eliminarProducto = (id: number) => {
-  console.log('Eliminar producto con ID:', id)
-}
 
 //Seccion de edicion
 const productoEditar = ref<any | null>(null)

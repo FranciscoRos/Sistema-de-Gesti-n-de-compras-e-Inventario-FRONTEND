@@ -23,12 +23,15 @@
         <div class="row g-3 align-items-end">
           <div class="col-md-4">
             <label class="form-label">Producto</label>
-            <select class="form-select" v-model="productoSeleccionado">
-              <option disabled value="">Selecciona un producto</option>
-              <option v-for="prod in productos" :key="prod.idProducto" :value="prod.idProducto">
-                {{ prod.nombre }}
-              </option>
-            </select>
+            <input
+              class="form-control"
+              list="lista-productos"
+              v-model="productoSeleccionadoNombre"
+              placeholder="Escribe o selecciona un producto"
+            />
+            <datalist id="lista-productos">
+              <option v-for="prod in productos" :key="prod.idProducto" :value="prod.nombre" />
+            </datalist>
           </div>
 
           <div class="col-md-3">
@@ -96,7 +99,7 @@ const token = localStorage.getItem('token') || ''
 const proveedores = ref<any[]>([])
 const productos = ref<any[]>([])
 const idProveedor = ref('')
-const productoSeleccionado = ref('')
+const productoSeleccionadoNombre = ref('')
 const cantidad = ref<number>(1)
 const precioUnitario = ref<number>(0)
 const listaProductos = ref<any[]>([])
@@ -127,17 +130,47 @@ const nombreProducto = (id: number) => {
   return p ? p.nombre : 'Desconocido'
 }
 
-const agregarProducto = () => {
-  if (!productoSeleccionado.value || cantidad.value <= 0 || precioUnitario.value <= 0) {
+const agregarProducto = async () => {
+  if (!productoSeleccionadoNombre.value || cantidad.value <= 0 || precioUnitario.value <= 0) {
     mensaje.value = 'Completa los datos del producto correctamente.'
     return
   }
+
+  let producto = productos.value.find(
+    p => p.nombre.toLowerCase() === productoSeleccionadoNombre.value.toLowerCase()
+  )
+
+  if (!producto) {
+    const res = await fetch(`${API_BASE}/productos/`, {
+      method: 'POST',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nombre: productoSeleccionadoNombre.value,
+        precioCompra: precioUnitario.value,
+        precioVenta: precioUnitario.value * 1.5,
+        stock: 0
+      })
+    })
+    const data = await res.json()
+    if (data.estado === 1) {
+      await cargarProductos()
+      producto = productos.value.find(p => p.idProducto === data.id)
+    } else {
+      mensaje.value = 'No se pudo registrar el nuevo producto.'
+      return
+    }
+  }
+
   listaProductos.value.push({
-    idProducto: productoSeleccionado.value,
+    idProducto: producto.idProducto,
     cantidad: cantidad.value,
     precioUnitario: precioUnitario.value
   })
-  productoSeleccionado.value = ''
+
+  productoSeleccionadoNombre.value = ''
   cantidad.value = 1
   precioUnitario.value = 0
   mensaje.value = ''
