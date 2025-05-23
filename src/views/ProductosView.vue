@@ -3,7 +3,7 @@
   <div class="container mt-5 pt-4">
     <h2 class="mb-4">Gestión de inventario de productos</h2>
 
-    <!-- Botón mostrar formulario -->
+  
     <button class="btn btn-success mb-3" @click="mostrarFormulario = !mostrarFormulario">
       {{ mostrarFormulario ? 'Cancelar' : 'Agregar producto al inventario' }}
     </button>
@@ -191,7 +191,7 @@ const guardarProducto = async () => {
 const productoEditar = ref<any | null>(null)
 
 const editarProducto = (producto: any) => {
-  productoEditar.value = { ...producto } // copia superficial para evitar editar en tiempo real
+  productoEditar.value = { ...producto } // copia temporal
 }
 
 const cancelarEdicion = () => {

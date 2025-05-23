@@ -1,19 +1,19 @@
 <template>
   <Header />
-<!-- 🔘 BOTÓN PARA IR A REGISTRAR UNA NUEVA COMPRA (alineado a la derecha con padding) -->
-<div class="d-flex justify-content-end pt-3 mb-3 pe-4">
-  <button class="btn btn-primary" @click="irANuevaCompra">
-    Registrar nueva compra
-  </button>
-</div>
+
+  <div class="d-flex justify-content-end pt-3 mb-3 pe-4">
+    <button class="btn btn-primary" @click="irANuevaCompra">
+      Registrar nueva compra
+    </button>
+  </div>
 
 
   <div class="container mt-5 pt-4">
     <h2 class="mb-4">Historial de Compras</h2>
 
-    <!-- ▶️ LISTA DE COMPRAS CON ACORDEÓN -->
+    <!-- COMPRAS -->
     <div v-for="compra in compras" :key="compra.idCompra" class="card mb-3 shadow">
-      <!-- 🟢 CABECERA CLICKEABLE PARA MOSTRAR DETALLES -->
+
       <div class="card-header d-flex justify-content-between align-items-center" @click="toggleDetalle(compra.idCompra)"
         style="cursor: pointer">
         <div>
@@ -27,7 +27,7 @@
         }"></i>
       </div>
 
-      <!-- 🔽 DETALLE DE COMPRA (SE EXPANDE CUANDO SE CLICKEA) -->
+
       <div v-if="detallesVisibles[compra.idCompra]" class="card-body bg-light">
         <p class="fw-bold">Detalle de productos:</p>
 
@@ -56,8 +56,7 @@
         </div>
       </div>
     </div>
-
-    <!-- ⚠️ MENSAJE SI NO HAY COMPRAS -->
+    
     <div v-if="compras.length === 0" class="alert alert-info">
       No hay compras registradas aún.
     </div>
@@ -65,13 +64,12 @@
 </template>
 
 <script lang="ts" setup>
-// 📦 IMPORTACIONES
+
 import Header from '../components/Header.vue'
 import { ref, onMounted } from 'vue'
 import { API_BASE } from '../config'
 import { useRouter } from 'vue-router'
 
-// 🧾 TIPOS DE DATOS
 interface Compra {
   idCompra: number
   fecha: string
@@ -86,15 +84,13 @@ interface Detalle {
   subtotal: number
 }
 
-// 📁 VARIABLES REACTIVAS
 const compras = ref<Compra[]>([])
 const detalles = ref<Record<number, Detalle[]>>({})
 const detallesVisibles = ref<Record<number, boolean>>({})
 
-// 🔐 TOKEN DEL USUARIO
 const token = localStorage.getItem('token')
 
-// 🔄 CARGAR COMPRAS
+
 const cargarCompras = async () => {
   try {
     const response = await fetch(`${API_BASE}/compras/`, {
@@ -116,7 +112,6 @@ const cargarCompras = async () => {
   }
 }
 
-// 🔽 TOGGLE DETALLE DE COMPRA
 const toggleDetalle = async (idCompra: number) => {
   detallesVisibles.value[idCompra] = !detallesVisibles.value[idCompra]
 
@@ -125,7 +120,6 @@ const toggleDetalle = async (idCompra: number) => {
   }
 }
 
-// 📦 CARGAR DETALLE DE UNA COMPRA
 const cargarDetalle = async (idCompra: number) => {
   try {
     const response = await fetch(`${API_BASE}/detalleCompras/${idCompra}`, {
