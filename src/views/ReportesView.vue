@@ -8,7 +8,7 @@
         </div>
 
         <!-- Cards -->
-          <div class="row text-center">
+          <div class="row text-center justify-content-center">
           <div class="col-md-3 mb-4">
             <div class="card text-white bg-primary">
               <div class="card-body">
@@ -24,15 +24,6 @@
                 <h5 class="card-title">Stock</h5>
                 <p class="card-text">Control de tu stock de productos</p>
                 <a id="stock" href="#" class="btn btn-light" @click="consultaStock">Descargar</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 mb-4">
-            <div class="card text-white bg-info">
-              <div class="card-body">
-                <h5 class="card-title">Inventario General</h5>
-                <p class="card-text">Vista general del inventario</p>
-                <a id="inventario" href="#" class="btn btn-light" @click="descargarInventario">Descargar</a>
               </div>
             </div>
           </div>
@@ -55,31 +46,6 @@ import Header from '../components/Header.vue'
 import { API_BASE } from '../config'
 
 const token = localStorage.getItem('token') || ''
-
-//Validar el click de los botones
-
-const descargarInventario = async () => {
-  try {
-    const res = await fetch(`${API_BASE}/reportes/productos`, {
-      headers: { Authorization: token }
-    })
-    
-    if (!res.ok) {
-      throw new Error('Error al descargar el reporte')
-    }
-
-    const blob = await res.blob()
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'inventario general.pdf'
-    a.click()
-    URL.revokeObjectURL(url)
-  } catch (error) {
-    console.error('Error:', error)
-    alert('Error al descargar el reporte')
-  }
-}
 
 const consultaStock = async () => {
   try {

@@ -110,7 +110,7 @@ const totalCompra = computed(() =>
 )
 
 const cargarProveedores = async () => {
-  const res = await fetch(`${API_BASE}/proveedores/todos`, {
+  const res = await fetch(`${API_BASE}/proveedores`, {
     headers: { Authorization: token }
   })
   const data = await res.json()
